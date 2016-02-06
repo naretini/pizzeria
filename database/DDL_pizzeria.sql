@@ -3,14 +3,15 @@ DROP TABLE if exists utenti CASCADE;
 DROP TABLE if exists ordini CASCADE;
 DROP TABLE if exists pizze CASCADE;
 DROP TABLE if exists ingredienti CASCADE;
-DROP TABLE if exists amministratori CASCADE;
+DROP TABLE if exists ordini_has_pizze;
+DROP TABLE if exists pizze_has_ingredienti;
+
+-- preprare enumerative type for ordini_has_pizze
+DROP TYPE  IF EXISTS tipo_pizza;
+CREATE TYPE tipo_pizza AS ENUM ('normale', 'calzone');
 
 
-CREATE TABLE amministratori   ( 
-    superuser_id serial not null,
-    login text not null,
-    password text not null,
-    primary key(superuser_id));
+
 
 
 CREATE TABLE utenti   ( 
@@ -21,18 +22,27 @@ CREATE TABLE utenti   (
     telefono text not null,
     login text not null,
     password text not null,
+    is_admin SMALLINT not null default 0,
     primary key(user_id));
 
-CREATE INDEX login_idx ON utenti (login);
+CREATE unique INDEX login_idx ON utenti (login);
 CREATE INDEX password_idx ON utenti (password);
 
-CREATE TABLE ordini   ( order_id serial not null,
+DROP VIEW IF EXISTS clienti;
+CREATE VIEW clienti AS SELECT *  FROM utenti  WHERE is_admin = 0;
+DROP VIEW IF EXISTS admin;
+CREATE VIEW  admin   AS SELECT *  FROM utenti  WHERE is_admin = 1;
+
+
+CREATE TABLE ordini   ( 
+     order_id serial not null,
      user_id integer REFERENCES utenti,
      consegna date not null,
      ora time not null ,
      indirizzo text,
      primary key(order_id));
 
+CREATE unique INDEX order_idx ON ordini (user_id, consegna, ora);
 CREATE INDEX dataconsegna_idx ON ordini (consegna);
 CREATE INDEX oraconsegna_idx ON ordini (ora);
 
@@ -46,13 +56,14 @@ CREATE TABLE pizze   (
 CREATE INDEX nomepizza_idx ON pizze (lower(nome));
 
 
-CREATE TYPE tipo_pizza AS ENUM ('normale', 'calzone');
+
 CREATE TABLE ordini_has_pizze   (
+    job_id serial not null,
     pizza_id integer REFERENCES pizze ON DELETE RESTRICT,
     order_id integer REFERENCES ordini ON DELETE CASCADE,
     tipo tipo_pizza not null,
-     quantita int,
-     primary key(pizza_id, order_id)
+    quantita int,
+     primary key(job_id)
 );
 
 
@@ -73,5 +84,21 @@ CREATE TABLE pizze_has_ingredienti (
 
 
 
+-- FUNCTIONS
+DROP FUNCTION IF EXISTS func_order_total (numeric);
+CREATE FUNCTION func_order_total (numeric) RETURNS numeric AS $$
+    SELECT 
+SUM(ordini_has_pizze.quantita * pizze.prezzo)  
+FROM 
+  public.ordini, 
+  public.ordini_has_pizze, 
+  public.pizze
+WHERE 
+  ordini.order_id = ordini_has_pizze.order_id AND
+  pizze.pizza_id = ordini_has_pizze.pizza_id  AND
+  ordini.order_id = $1
+
+  group by ordini.order_id
+$$ LANGUAGE SQL;
 
 

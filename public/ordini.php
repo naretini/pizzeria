@@ -1,24 +1,27 @@
-<?php
-require_once '../classes/User.class.php';
-require_once '../classes/Pizzeria.class.php';
-require_once '../classes/Order.class.php';
+<?php 	require_once '../classes/require.inc.php';
 
 User::authPage();
 
 ?><html lang="en"><head>
     <title>Pizzeria</title>
     <?php include_once 'assets/tmpl/headers.inc.php' ?>
-
 <script>
+	function viewDetails(el){
+		el.closest('tr').next('tr').slideToggle()
+	}
+
 	//controlla la compilazione di tutti i campi e che le password combacino
 	function ordina(){
 		var validate= true;
+		$('#general-err').hide();
+				
 		$('#form_ordini input').each(function(){
+			console.log($(this).val(), $(this).val()!='');
 		if($(this).val() == '' )
 		    validate = false;
 		});
 		if(!validate){
-			$('#general-err').show();
+			$('#general-err').slideDown();
 			return false;
 		}
 		else { 
@@ -85,8 +88,7 @@ User::authPage();
 
     			$result = Order::Insert($_POST);
     		
-    			
-    			if($result===TRUE):
+    			if($result==TRUE):
     	?>
     				<h1>Ordine inoltrato con successo </h1>
     				
@@ -161,7 +163,7 @@ User::authPage();
 					<input type="hidden"  name="pizze" value="" id="ordine_pizze">
 					<div class="form-group">
 						<label>Indirizzo di consegna</label>
-						<textarea placeholder="Enter Full Address Here.." rows="3" class="form-control" name="indirizzo"></textarea>
+						<input type="text"  placeholder="Enter Full Address Here.."  class="form-control" name="indirizzo"> 
 					</div>	
 
 					<div class="form-group">
@@ -174,7 +176,7 @@ User::authPage();
 					</div>	
 
 
-					<div id="general-err" class="form-group error" style="display:none">
+					<div id="general-err"  class="alert alert-danger" role="alert" style="display:none">
 						<label class="error">Compilare tutti i campi</label>
 					</div>
 
@@ -187,6 +189,11 @@ User::authPage();
     	?>
 	</div> <!-- /container -->
   
+	<h1 class="well">Ordini inoltrati</h1>
+	<?php
+		Order::getOrdersList(User::loggedId());
+	?>
+
     <?php include_once 'assets/tmpl/footer.inc.php' ?>
 
 </body></html>

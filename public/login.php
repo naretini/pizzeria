@@ -1,5 +1,4 @@
-<?php
-require_once '../classes/User.class.php';
+<?php   require_once '../classes/require.inc.php';
 //send user to HP if already logged
 User::anonymousPage();
 ?><html lang="en"><head>

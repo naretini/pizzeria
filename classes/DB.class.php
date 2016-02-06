@@ -18,16 +18,23 @@ class DB {
 	// Constructor
 	private function __construct() {
 		$config = parse_ini_file('../config/config.ini');
-		$conn_string = "host={$config['host']} port={$config['port']} dbname={$config['dbname']} user={$config['user']} password={$config['password']}  options='--client_encoding=UTF8'";
+		$conn_string = "pgsql:host={$config['host']} port={$config['port']} dbname={$config['dbname']} user={$config['user']} password={$config['password']}  options='--client_encoding=UTF8'";
+		try{
+			self::$_connection = new PDO($conn_string)  or die('connection failed');
+			//turn on exceptions
+			self::$_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			
+		}catch(PDOException  $e ){
+			echo "Error: ".$e;
+		}
 
-
-		self::$_connection = pg_connect($conn_string)  or die('connection failed');
+		
 	
 	}
 	// Magic method clone is empty to prevent duplication of connection
 	private function __clone() { }
 	// Get mysqli connection
-	public function getConnection() {
+	public static function getConnection() {
 		return self::$_connection;
 	}
 }

@@ -1,9 +1,13 @@
+TRUNCATE amministratori;
 TRUNCATE utenti cascade;
 TRUNCATE pizze CASCADE;
 TRUNCATE ordini CASCADE;
 TRUNCATE ingredienti CASCADE ;
 TRUNCATE ordini_has_pizze;
 TRUNCATE pizze_has_ingredienti;
+
+
+
 
 -- UTENTI
 INSERT INTO utenti 
@@ -14,12 +18,16 @@ INSERT INTO utenti
 	telefono, 
 	indirizzo, 
 	login, 
-	password
+	password,
+	is_admin
 )
 VALUES
-('1', 'Nicola', 'Aretini', '0422123456', 'via roma 15 quarto Altino', 'nicola', 'nic0la'),
-('2', 'Pippo', 'Disney', '02123456', 'via zu 23 Topolinia', 'pippo', 'pippo2'),
-('3', 'Pluto', 'Disney', '08456213', 'via ro 54 Topolinia', 'pluto', 'pluto3');
+('1', 'Nicola', 'Aretini', '0422123456', 'via roma 15 quarto Altino', 'nicola', 'nic0la',1),
+('2', 'Pippo', 'Disney', '02123456', 'via zu 23 Topolinia', 'pippo', 'pippo',0),
+('3', 'Pluto', 'Disney', '08456213', 'via ro 54 Topolinia', 'pluto', 'pluto',0);
+
+-- updates serial count for subsequent inserts
+SELECT setval('utenti_user_id_seq', (SELECT MAX(user_id) FROM utenti));
 
 
 -- INGREDIENTI
@@ -43,6 +51,9 @@ VALUES
 	(11, 'Peperoni  45gr', '280' ),
 	(12, 'Melanzane  45gr', '290' );
 
+-- updates serial count for subsequent inserts
+SELECT setval('ingredienti_ingredient_id_seq', (SELECT MAX(ingredient_id) FROM ingredienti));
+
 
 -- PIZZE
 INSERT INTO pizze 
@@ -59,6 +70,7 @@ VALUES
 	(5, 'Valtellina', 7.5),
 	(6, 'Verdure', 6.5);
 
+SELECT setval('pizze_pizza_id_seq', (SELECT MAX(pizza_id) FROM pizze));
 
 -- PIZZE_HAS_INGREDIENTI
 INSERT INTO  pizze_has_ingredienti
@@ -90,6 +102,8 @@ VALUES
 	(2, 3, '2016-01-26', '20:00', 'via augusta 3'),
 	(3, 2, '2016-01-27', '19:30', 'via umberto I 7'),
 	(4, 1, '2016-01-27', '20:20', 'via foppa 8');
+
+SELECT setval('ordini_order_id_seq', (SELECT MAX(order_id) FROM ordini));
 
 -- ORDINI_HAS_PIZZE
 INSERT INTO ordini_has_pizze

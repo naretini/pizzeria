@@ -29,15 +29,27 @@ class User{
 				)
 				VALUES
 				( 
-					'{$arrData['nome']}', 
-					'{$arrData['cognome']}',
-					'{$arrData['telefono']}',
-					'{$arrData['indirizzo']}',
-					'{$arrData['login']}',
-					'{$arrData['password']}'
+					:nome, 
+					:cognome,
+					:telefono,
+					:indirizzo,
+					:login,
+					:password
 				);";
+					
+				$stmt = $dbconn->prepare($query);
+				
+				
+				$result = $stmt->execute(array(
+					':nome'  		=> $arrData['nome'], 
+					':cognome' 		=> $arrData['cognome'],
+					':telefono' 	=> $arrData['telefono'],
+					':indirizzo' 	=> $arrData['indirizzo'],
+					':login' 		=> $arrData['login'],
+					':password' 	=> $arrData['password']
 
-			$result = pg_query($dbconn, $query);
+				));
+
 			if (!$result) {
 			  return FALSE;
 			}
@@ -59,23 +71,30 @@ class User{
 		){
 			return FALSE;
 		}else{
-			$query = "select user_id,nome FROM  utenti 
-				WHERE 
-				login='{$arrData['login']}' AND
-				password='{$arrData['password']}'
-				;";
 
-			$result = pg_query($dbconn, $query);
+			$stmt=FALSE;
+			try{
 
+				$stmt = $dbconn->prepare("SELECT  user_id,nome,is_admin FROM  utenti 	WHERE 	login=? AND password=?");
+				
+				$stmt->bindParam(1, $arrData['login']);
+				$stmt->bindParam(2, $arrData['password']);
+				$stmt->execute();
+				
+				
 
-			if (!$result) {
-			  return FALSE;
-			}
+				if (!$stmt) {
+				  return FALSE;
+				}
 
-			if ($row = pg_fetch_row($result)) {
-				$_SESSION['authUserId'] = $row[0];
-				$_SESSION['authUser'] = $row[1];
-				return TRUE;
+				if($row=$stmt->fetch(PDO::FETCH_OBJ)) {
+					$_SESSION['authUserId'] = $row->user_id;
+					$_SESSION['authUser'] = $row->nome;
+					$_SESSION['isAdmin'] = $row->is_admin;
+					return TRUE;
+			    }
+			}catch(PDOException  $e ){
+				echo "Error: ".$e;
 			}
 
 		}
@@ -85,15 +104,20 @@ class User{
 
 
 	public static function loggedName(){
-		return $_SESSION['authUser'];
+		return isset($_SESSION['authUser']) &&  $_SESSION['authUser'];
 	}
 
 	public static function loggedId(){
-		return $_SESSION['authUserId'];
+		return isset($_SESSION['authUserId']) &&  $_SESSION['authUserId'];
 	}
 	
 	public static function isLogged(){
 		return !empty($_SESSION['authUser']);
+	}
+
+
+	public static function isAdmin(){
+		return isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']=='1';
 	}
 
 	public static function logout(){
@@ -101,7 +125,7 @@ class User{
 		unset($_SESSION['authUserId']);
 	}
 
-	public function anonymousPage(){
+	public static function anonymousPage(){
 		if(self::isLogged()){
 			header("Location: index.php");
 			exit;

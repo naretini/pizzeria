@@ -1,38 +1,39 @@
-<?php
-require_once '../classes/User.class.php';
+<?php 	require_once '../classes/require.inc.php';
 //send user to HP if already logged
 User::anonymousPage();
 ?><html lang="en"><head>
     <title>Pizzeria</title>
     <?php include_once 'assets/tmpl/headers.inc.php' ?>
 
-<script>
-	//controlla la compilazione di tutti i campi e che le password combacino
-function register(){
-	var validate= false;
-	$('#form_registration input').each(function(){
-	if($(this).val() != '' || $(this).attr('checked'))
-	    validate = true;
-	});
-	if(!validate){
-		$('#general-err').show();
-		return false;
-	}
-	else { 
-		if(	$('#pwd1').val()==$('#pwd2').val()	){
-			$('#form_registration').submit();
-		}else{
-			$('#pwd-err').show();
-		}
-	}
-}
+		<script>
+			//controlla la compilazione di tutti i campi e che le password combacino
+			function register(){
+				var validate = true;
+				$('#general-err').hide();
+				$('#pwd-err').hide();
 
-</script>
+				$('#form_registration input').each(function(){
+			
+				if($(this).val() == '' )
+				    validate = false;
+				});
+				if(!validate){
+					$('#general-err').slideDown();
+					return false;
+				}
+				else { 
+					if(	$('#pwd1').val()==$('#pwd2').val()	){
+						$('#form_registration').submit();
+					}else{
+						$('#pwd-err').slideDown();
+					}
+				}
+			}
+		</script>
 
   </head>
 
   <body>
-
     <!-- Fixed navbar -->
     <?php include_once 'assets/tmpl/navbar.inc.php' ?>
     
@@ -56,9 +57,9 @@ function register(){
     	<?php
     			else:
     	?>
-    <div class="alert alert-danger" role="alert">
-    Sono stati riscontrati dei problemi nella registrazione  <a href="register.php" class="alert-link">Riprova qui</a>
-</div>
+    			<div class="alert alert-danger" role="alert">
+    				Sono stati riscontrati dei problemi nella registrazione  <a href="register.php" class="alert-link">Riprova qui</a>
+				</div>
     	<?php
 			endif;
     	else:
@@ -100,11 +101,11 @@ function register(){
 						<label>Password confirm</label>
 						<input type="password" placeholder="Confirm a password.." class="form-control" id="pwd2">
 					</div>
-					<div id="pwd-err" class="form-group error" style="display:none">
+					<div id="pwd-err" class="alert alert-danger" role="alert"  style="display:none">
 						<label class="error">Le password non coincidono</label>
 					</div>
 
-					<div id="general-err" class="form-group error" style="display:none">
+					<div id="general-err"  class="alert alert-danger" role="alert" style="display:none">
 						<label class="error">Compilare tutti i campi</label>
 					</div>
 
@@ -119,9 +120,6 @@ function register(){
     	?>
 	</div> <!-- /container -->
 
-
-    
-  
     <?php include_once 'assets/tmpl/footer.inc.php' ?>
 
 </body></html>

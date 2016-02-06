@@ -1,6 +1,4 @@
-<?php
-require_once '../classes/User.class.php';
-
+<?php 	require_once '../classes/require.inc.php';
 User::logout();
 
 
