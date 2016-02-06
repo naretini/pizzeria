@@ -84,19 +84,19 @@ class User{
 
 
 
-	public function loggedName(){
+	public static function loggedName(){
 		return $_SESSION['authUser'];
 	}
 
-	public function loggedId(){
+	public static function loggedId(){
 		return $_SESSION['authUserId'];
 	}
 	
-	public function isLogged(){
+	public static function isLogged(){
 		return !empty($_SESSION['authUser']);
 	}
 
-	public function logout(){
+	public static function logout(){
 		unset($_SESSION['authUser']);
 		unset($_SESSION['authUserId']);
 	}
@@ -111,7 +111,7 @@ class User{
 	/**
 		A page that requires login
 	*/
-	public function authPage(){
+	public static function authPage(){
 		if(!self::isLogged()){
 			header("Location: login.php?required");
 			exit;

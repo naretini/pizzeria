@@ -43,7 +43,7 @@ CREATE TABLE pizze   (
     prezzo numeric,
     primary key(pizza_id));
 
-CREATE INDEX nomepizza_idx ON pizze (lower(nome);
+CREATE INDEX nomepizza_idx ON pizze (lower(nome));
 
 
 CREATE TYPE tipo_pizza AS ENUM ('normale', 'calzone');
@@ -62,7 +62,7 @@ CREATE TABLE ingredienti(
     quantita int,
     primary key(ingredient_id));
 
-CREATE INDEX nomeingrediente_idx ON ingredienti (lower(nome);
+CREATE INDEX nomeingrediente_idx ON ingredienti (lower(nome));
 
 
 CREATE TABLE pizze_has_ingredienti ( 
