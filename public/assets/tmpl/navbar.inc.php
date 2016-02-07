@@ -45,7 +45,8 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li class=""><a href="index.php">Home</a></li>
-            <li><a href="ordini.php">Ordini</a></li>
+            <li><a href="ordini.php#list">My orders</a></li>
+            <li><a href="ordini.php">Order now</a></li>
             
             <!--
             <li><a href="#contact">Contact</a></li>

@@ -142,7 +142,7 @@ class Order{
 
 		//var_dump($user_id);
 		$isAdmin = User::isAdmin();
-		var_dump($isAdmin);
+		// var_dump($isAdmin);
 
 		$data = self::getOrders($user_id);
 

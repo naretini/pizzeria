@@ -188,13 +188,14 @@ User::authPage();
     	<?php
     	endif;
     	?>
-	</div> <!-- /container -->
-  
+	  <a name="list"></a>
+    	<div>
 	<h1 class="well">Ordini inoltrati</h1>
 	<?php
 		Order::getOrdersList(User::loggedId());
 	?>
-
+	</div>
+</div> <!-- /container -->
     <?php include_once 'assets/tmpl/footer.inc.php' ?>
 
 </body></html>
