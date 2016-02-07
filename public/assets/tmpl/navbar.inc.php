@@ -15,7 +15,7 @@
           <ul class="nav navbar-nav">
             <li ><a href="admin_users.php">Utenti</a></li>
             <li><a href="admin_orders.php">Ordini</a></li>
-            
+            <li><a href="magazzino.php">Magazzino</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
           <?php
@@ -44,8 +44,9 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="index.php">Home</a></li>
+            <li class=""><a href="index.php">Home</a></li>
             <li><a href="ordini.php">Ordini</a></li>
+            
             <!--
             <li><a href="#contact">Contact</a></li>
             <li class="dropdown">

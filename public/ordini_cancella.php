@@ -5,7 +5,11 @@ User::authPage();
 ?><html lang="en"><head>
     <title>Pizzeria</title>
     <?php include_once 'assets/tmpl/headers.inc.php' ?>
-
+<script>
+    function viewDetails(el){
+        el.closest('tr').next('tr').slideToggle()
+    }
+    </script>
   </head>
 
   <body>

@@ -98,15 +98,16 @@ CREATE INDEX ingredient_idx ON pizze_has_ingredienti (ingredient_id);
 
 
 
--- FUNCTIONS
+-- FUNCTIONS / TRIGGERS
+
 DROP FUNCTION IF EXISTS func_order_total (numeric);
 CREATE FUNCTION func_order_total (numeric) RETURNS numeric AS $$
     SELECT 
 SUM(ordini_has_pizze.quantita * pizze.prezzo)  
 FROM 
-  public.ordini, 
-  public.ordini_has_pizze, 
-  public.pizze
+  ordini, 
+  ordini_has_pizze, 
+  pizze
 WHERE 
   ordini.order_id = ordini_has_pizze.order_id AND
   pizze.pizza_id = ordini_has_pizze.pizza_id  AND
@@ -114,5 +115,59 @@ WHERE
 
   group by ordini.order_id
 $$ LANGUAGE SQL;
+
+
+
+CREATE OR REPLACE FUNCTION updateStorage() 
+RETURNS TRIGGER AS $trigger$
+    BEGIN
+    
+      UPDATE
+       ingredienti 
+      SET
+       quantita=quantita-NEW.quantita
+
+     where ingredienti.ingredient_id IN (
+        SELECT pizze_has_ingredienti.ingredient_id FROM pizze_has_ingredienti 
+        WHERE pizze_has_ingredienti.pizza_id=NEW.pizza_id
+      );
+     return NEW;
+        END;
+$trigger$ language plpgsql;
+
+
+CREATE OR REPLACE FUNCTION updateStorageDel() 
+RETURNS TRIGGER AS $triggerDel$
+    BEGIN
+    
+      UPDATE
+       ingredienti 
+      SET
+       quantita=quantita+OLD.quantita
+
+     where ingredienti.ingredient_id IN (
+        SELECT pizze_has_ingredienti.ingredient_id FROM pizze_has_ingredienti 
+        WHERE pizze_has_ingredienti.pizza_id=OLD.pizza_id
+      );
+     return NEW;
+        END;
+$triggerDel$ language plpgsql;
+
+
+DROP TRIGGER  IF EXISTS trigger on ordini_has_pizze;
+CREATE TRIGGER trigger
+    AFTER INSERT ON ordini_has_pizze
+    FOR EACH ROW
+    EXECUTE PROCEDURE updateStorage();
+
+DROP TRIGGER  IF EXISTS triggerDel on ordini_has_pizze;    
+CREATE TRIGGER triggerDel
+    AFTER DELETE ON ordini_has_pizze
+    FOR EACH ROW
+    EXECUTE PROCEDURE updateStorageDel();
+
+
+
+
 
 
