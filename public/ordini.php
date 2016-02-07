@@ -91,6 +91,7 @@ User::authPage();
     			if($result==TRUE):
     	?>
     				<h1>Ordine inoltrato con successo </h1>
+					<a class="btn btn-lg btn-primary" href="ordini.php" role="button">Fai un nuovo ordine »</a>  
     				
     	<?php
     			else:
@@ -163,7 +164,7 @@ User::authPage();
 					<input type="hidden"  name="pizze" value="" id="ordine_pizze">
 					<div class="form-group">
 						<label>Indirizzo di consegna</label>
-						<input type="text"  placeholder="Enter Full Address Here.."  class="form-control" name="indirizzo"> 
+						<input type="text"  placeholder="Enter Full Address Here.."  class="form-control" name="indirizzo" value="<?php echo User::getLoggedUserAddress(); ?>"> 
 					</div>	
 
 					<div class="form-group">

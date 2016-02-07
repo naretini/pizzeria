@@ -1,4 +1,7 @@
 <?php 	require_once '../classes/require.inc.php';
+
+		User::publicPage();
+		
 ?><html lang="en">
 	<head>
     	<title>Pizzeria</title>

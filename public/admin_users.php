@@ -1,4 +1,7 @@
 <?php 	require_once '../classes/require.inc.php';
+
+		User::adminPage();
+		
 ?><html lang="en">
 	<head>
     	<title>Pizzeria</title>
@@ -17,16 +20,16 @@
 	    <?php include_once 'assets/tmpl/navbar.inc.php'; ?>
 
 	    <div class="container">
-			<h3>Le nostre pizze</h3>
-			<h4>Ecco il nostro catalogo pizze nostre pizze </h4>
+			<h3>Elenco utenti registrati</h3>
+			
 	    
 		    <div class="row">  
-			    <form id="pizza_search" class="navbar-form navbar-left" role="search" action="index.php" method="post">
+			    <form id="users_search" class="navbar-form navbar-left" role="search" action="admin_users.php" method="post">
 					<div class="form-group">
 					<input type="text" name="search" class="form-control" placeholder="Search">
 					</div>
 
-					<button type="submit" class="btn btn-default" onclick="$('#pizza_search').submit()">Submit</button>
+					<button type="submit" class="btn btn-default" onclick="$('#users_search').submit()">Submit</button>
 				</form>
 			</div>
 			<?php
@@ -36,9 +39,9 @@
 					printf("<div class=\"row\">Risultati della ricerca per <strong>%s</strong></div>", $search);
 				}
 
-				Pizzeria::getPizzaList($search);
+				User::getClientiList($search);
 			?>
-			<a class="btn btn-lg btn-primary" href="ordini.php" role="button">Ordina le pizze »</a>  
+			
 	    </div> <!-- /container -->
 
 	    <?php include_once 'assets/tmpl/footer.inc.php' ?>

@@ -22,9 +22,10 @@ INSERT INTO utenti
 	is_admin
 )
 VALUES
-('1', 'Nicola', 'Aretini', '0422123456', 'via roma 15 quarto Altino', 'nicola', 'nic0la',1),
+('1', 'Nicola', 'Aretini', '0422123456', 'via roma 15 quarto Altino', 'nicola', 'nicola',0),
 ('2', 'Pippo', 'Disney', '02123456', 'via zu 23 Topolinia', 'pippo', 'pippo',0),
-('3', 'Pluto', 'Disney', '08456213', 'via ro 54 Topolinia', 'pluto', 'pluto',0);
+('3', 'Pluto', 'Disney', '08456213', 'via ro 54 Topolinia', 'pluto', 'pluto',0),
+('4', 'Nicola', 'Aretini', '0422123456', 'via roma 15 quarto Altino', 'admin', 'admin',1);
 
 -- updates serial count for subsequent inserts
 SELECT setval('utenti_user_id_seq', (SELECT MAX(user_id) FROM utenti));
@@ -95,13 +96,14 @@ INSERT INTO ordini
 	user_id, 
 	consegna, 
 	ora, 
-	indirizzo
+	indirizzo,
+	status
 )
 VALUES
-	(1, 1, '2016-01-25', '21:00', 'via foppa 8'),
-	(2, 3, '2016-01-26', '20:00', 'via augusta 3'),
-	(3, 2, '2016-01-27', '19:30', 'via umberto I 7'),
-	(4, 1, '2016-01-27', '20:20', 'via foppa 8');
+	(1, 1, '2016-01-25', '21:00', 'via foppa 8', 'pending'),
+	(2, 3, '2016-01-26', '20:00', 'via augusta 3', 'delivered'),
+	(3, 2, '2016-01-27', '19:30', 'via umberto I 7', 'pending'),
+	(4, 1, '2016-01-27', '20:20', 'via foppa 8', 'delivered');
 
 SELECT setval('ordini_order_id_seq', (SELECT MAX(order_id) FROM ordini));
 

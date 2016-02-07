@@ -1,4 +1,4 @@
-<?php 	require_once '../classes/require.inc.php';
+<?php 	require_once '../classes/require.inc.php';	
 
 User::authPage();
 
@@ -27,7 +27,7 @@ User::authPage();
     			
     	?>
     <div class="alert alert-danger" role="alert">
-    Sono stati riscontrati dei problemi nel salvataggio dell' ordine   <a href="register.php" class="alert-link">Riprova qui</a>
+    Sono stati riscontrati dei problemi nella cancellazione</a>
 </div>
     	<?php
 			

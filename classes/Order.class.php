@@ -72,6 +72,7 @@ class Order{
 					  ordini.consegna, 
 					  ordini.ora, 
 					  ordini.indirizzo order_addr, 
+					  ordini.status order_status,
 					  array_to_json(array_agg(ordini_has_pizze.tipo)) pizze_tipi,
 					  array_to_json(array_agg(ordini_has_pizze.quantita)) pizze_qta,
 					  utenti.nome, 
@@ -110,7 +111,9 @@ class Order{
 				$data[]= array(
 					'order_id' 					=> $row->order_id,
 					'order_consegna' 			=> $row->consegna.' '.$row->ora.' '.$row->order_addr,
+					'order_status'				=> $row->order_status,
 					'user_id' 					=> $row->user_id,
+					'user_nome' 				=> $row->nome.' '.$row->cognome,
 					'user_indirizzo' 			=> $row->user_addr,
 					'telefono' 					=> $row->telefono,
 
@@ -137,22 +140,36 @@ class Order{
 
 	public static function getOrdersList($user_id=NULL){
 
-		//var_dump("userid ".$user_id);
+		//var_dump($user_id);
+		$isAdmin = User::isAdmin();
+		var_dump($isAdmin);
 
 		$data = self::getOrders($user_id);
 
 		if(!empty($data)){
 			print('<table class="table">');
-			printf('<tr> <th>#</th> <th>Consegna</th> <th>Totale</th> <th>View</th><th>Action</th> </tr>');
+			printf('<tr> <th>#</th> %s <th>Consegna</th> <th>Totale</th> <th>View</th><th>Action</th> %s</tr>', ($isAdmin?'<th>Nominativo</th>':''),($isAdmin?'<th>Stato consegna</th>':''));
 			foreach ($data as $key => $value) {
-			printf('<tr> <th scope="row">%s</th> <td>%s</td> <td>%s &euro;</td> <td><a class="btn  btn-primary" role="button" onclick="viewDetails($(this))">Details </a></td><td><a href="ordini_cancella.php?id='.$value['order_id'].'" class="btn  btn-warning" role="button" >Disdici</a></td></tr>',
+			printf('
+				<tr> 
+					<th scope="row">%s</th> 
+					%s 
+					<td>%s</td> 
+					<td>%s &euro;</td> 
+					<td><a class="btn  btn-primary" role="button" onclick="viewDetails($(this))">Details </a></td>
+					<td>%s</td>
+					%s
+				</tr>',
 					$value['order_id'],
+					$isAdmin?'<td>'.$value['user_nome'].'</td>':'',
 					$value['order_consegna'],
-					$value['order_total']
+					$value['order_total'],
+					($value['order_status']=='pending')?'<a href="ordini_cancella.php?id='.$value['order_id'].'" class="btn  btn-warning" role="button" >Disdici</a>':'Delivered',
+					$isAdmin?(($value['order_status']=='pending')?'<td><a href="ordini_status.php?id='.$value['order_id'].'&status=delivered" class="btn  btn-success" role="button" >Set Consegnato</a></td>':'<td>Delivered</td>'):''
 				);
 				$obj_pizze_nomi = ($value['pizze_nomi']);
 				$obj_pizze_tipi = ($value['pizze_tipi']);
-				$obj_pizze_qta = ($value['pizze_qta']);
+				$obj_pizze_qta  = ($value['pizze_qta']);
 
 				$pizze = "<h5>Dettagli ordine</h5><ul>";
 				foreach($obj_pizze_nomi as $k=>$v){
@@ -173,20 +190,48 @@ class Order{
 	}
 
 
+	public static function setOrderStatus($id, $newStatus){
+		if(
+			$newStatus!='pending' &&
+			$newStatus!='delivered' 
+		){
+			throw new Exception("Invalid status $newStatus");
+		}else{
+			$db = DB::getInstance();
+			$dbconn = $db::getConnection();
+
+			$query = " UPDATE ordini 
+			SET 
+				status = :status           
+	        WHERE 
+	        	order_id = :id";
+
+			$stmt = $dbconn->prepare($query);                                  
+			$stmt->bindParam(':id', $id, PDO::PARAM_INT);   
+			$stmt->bindParam(':status', $newStatus, PDO::PARAM_STR);   
+			
+			return $stmt->execute();
+		}
+
+	}
+
 
 	public static function deleteOrder($idOrder){
 		try{			
 			$db = DB::getInstance();
 			$dbconn = $db::getConnection();
 
-			$query = "DELETE FROM ordini WHERE order_id=:order_id;";
+			$query = "DELETE FROM ordini WHERE order_id=:order_id  and status='pending'";
 			$stmt = $dbconn->prepare($query);
 
 			$res = $stmt->execute(array(
 			    ':order_id' => $idOrder
 			));
 
-			return $res;
+			$count = $stmt->rowCount();
+
+			return $res && $count>0;
+
 		}catch(PDOException  $e ){
 			echo "Error: ".$e;
 			return FALSE;
